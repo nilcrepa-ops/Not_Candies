@@ -24,7 +24,7 @@ def home():
     search_result = None
     search_error = None
     added_message = None
-    search_id = request.args.get('candy_id', type=int)
+    search_name = request.args.get('candy_name')
 
     try:
         connection = get_connection()
@@ -32,11 +32,11 @@ def home():
         cursor.execute('SELECT * FROM chuches ORDER BY id')
         candies = cursor.fetchall()
 
-        if search_id:
-            cursor.execute('SELECT * FROM chuches WHERE id = %s', (search_id,))
+        if search_name:
+            cursor.execute('SELECT * FROM chuches WHERE nombre = %s', (search_name,))
             search_result = cursor.fetchone()
             if search_result is None:
-                search_error = f'No product found with ID {search_id}.'
+                search_error = f'No product found with name {search_name}.'
 
         cursor.close()
         connection.close()
@@ -52,7 +52,7 @@ def home():
         candies=candies,
         search_result=search_result,
         search_error=search_error,
-        search_id=search_id,
+        search_name=search_name,
         added_message=added_message
     )
 
