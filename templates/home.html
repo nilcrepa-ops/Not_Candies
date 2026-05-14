@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <main class="page-content">
+        <section class="section-card">
+            <h2 class="section-title">All products</h2>
+            <div class="section-body">
+                <table class="product-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if candies %}
+                            {% for candy in candies %}
+                                <tr>
+                                    <td>{{ candy.id }}</td>
+                                    <td>{{ candy.nombre }}</td>
+                                    <td>{{ candy.descripcion }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3">No products are available yet.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section-card">
+            <h2 class="section-title">Search product / Check DB</h2>
+            <div class="section-body split-grid">
+                <div>
+                    <form class="control-form" method="get" action="{{ url_for('home') }}">
+                        <label for="candy_id">Product ID</label>
+                        <input type="number" id="candy_id" name="candy_id" required min="1" placeholder="Enter product ID" value="{{ search_id or '' }}">
+                        <button type="submit">Search</button>
+                    </form>
+                    {% if search_result %}
+                        <div class="result-box success">
+                            <strong>Found product</strong>
+                            <p>ID: {{ search_result.id }}</p>
+                            <p>Name: {{ search_result.nombre }}</p>
+                            <p>Description: {{ search_result.descripcion }}</p>
+                        </div>
+                    {% elif search_error %}
+                        <div class="result-box error">{{ search_error }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="db-panel">
+                    <p>Verify that the application can reach your MySQL database.</p>
+                    <button type="button" onclick="checkDbConnection()">Check DB connection</button>
+                    <p id="db-status" class="db-status">Press the button to test the connection.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-card">
+            <h2 class="section-title">Add a new product</h2>
+            <div class="section-body">
+                <form class="control-form" method="post" action="{{ url_for('add_candy') }}">
+                    <label for="nombre">Name</label>
+                    <input type="text" id="nombre" name="nombre" required placeholder="Product name">
+
+                    <label for="descripcion">Description</label>
+                    <input type="text" id="descripcion" name="descripcion" required placeholder="Product description">
+
+                    <button type="submit">Add product</button>
+                </form>
+                {% if added_message %}
+                    <div class="result-box success">{{ added_message }}</div>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+
+    <script>
+        async function checkDbConnection() {
+            const status = document.getElementById('db-status');
+            status.textContent = 'Checking connection...';
+            status.className = 'db-status';
+
+            try {
+                const response = await fetch(`{{ url_for('db_status') }}`);
+                const data = await response.json();
+
+                if (response.ok && data.ok) {
+                    status.textContent = data.message;
+                    status.classList.add('db-ok');
+                } else {
+                    status.textContent = data.error || 'Unable to connect to database.';
+                    status.classList.add('db-fail');
+                }
+            } catch (error) {
+                status.textContent = error.message || 'Connection request failed.';
+                status.classList.add('db-fail');
+            }
+        }
+    </script>
+
+{% endblock %}

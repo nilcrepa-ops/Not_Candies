@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not Candies - Nil Creus</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="../img/favicon_NC.png" type="image/png">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <header class="main-header">
+        <h1 class="logo">NOT CANDIES</h1>
+        <div class="glow-effect"></div>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    {% include "footer.html" %}
+</body>
+
+</html>
